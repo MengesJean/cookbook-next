@@ -11,7 +11,7 @@ const BookCard = ({ book }: BookCardProps) => {
   return (
     <Link href={`/dashboard/books/${book.id}`} className="group">
       <div className="flex flex-col gap-2 border rounded overflow-hidden">
-        <div className="overflow-hidden aspect-[3/4] w-full">
+        <div className="overflow-hidden aspect-square md:aspect-[3/4] w-full">
           <Image
             src={`${process.env.NEXT_PUBLIC_API_URL}/${book.image}`}
             alt={book.title}

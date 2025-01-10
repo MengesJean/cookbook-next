@@ -2,10 +2,13 @@
 
 import { BookSchema } from "@/lib/schemas/book.schemas";
 import { Book, BookWithRecipes } from "@/lib/types/Book";
+import { revalidatePath } from "next/cache";
 
 export const getBooks = async (): Promise<Book[]> => {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books`);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books`, {
+      cache: "force-cache",
+    });
     return response.json();
   } catch (error) {
     console.error(error);
@@ -13,11 +16,17 @@ export const getBooks = async (): Promise<Book[]> => {
   }
 };
 
-export const getBook = async (id: string): Promise<BookWithRecipes> => {
+export const getBook = async (id: string): Promise<BookWithRecipes | null> => {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/books/${id}`
+      `${process.env.NEXT_PUBLIC_API_URL}/books/${id}`,
+      {
+        cache: "force-cache",
+      }
     );
+    if (!response.ok) {
+      return null;
+    }
     return response.json();
   } catch (error) {
     console.error(error);
@@ -37,6 +46,7 @@ export const createBook = async (book: BookSchema) => {
       method: "POST",
       body: formData,
     });
+    revalidatePath("/dashboard/books");
     return response.json();
   } catch (error) {
     console.error(error);
@@ -58,6 +68,7 @@ export const updateBook = async (book: BookSchema) => {
         body: formData,
       }
     );
+    revalidatePath(`/dashboard/books/${book.id}`);
     return response.json();
   } catch (error) {
     console.error(error);
@@ -73,6 +84,7 @@ export const deleteBook = async (id: string) => {
         method: "DELETE",
       }
     );
+    revalidatePath("/dashboard/books");
     return response.json();
   } catch (error) {
     console.error(error);

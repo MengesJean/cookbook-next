@@ -1,11 +1,32 @@
 import RecipesFilter from "@/components/recipes/RecipesFilter";
 import RecipesTable from "@/components/recipes/RecipesTable";
+import Loading from "@/components/ui/Loading";
 import Typography from "@/components/ui/Typography";
 import { getBook } from "@/lib/actions/book.actions";
+import { BookWithRecipes } from "@/lib/types/Book";
 import Image from "next/image";
+import { notFound } from "next/navigation";
+import { Suspense, use } from "react";
+
 const BookPage = async ({ params }: { params: { id: string } }) => {
   const { id } = await params;
-  const book = await getBook(id);
+  const book = getBook(id);
+  return (
+    <Suspense fallback={<Loading />}>
+      <RecipeContent bookPromise={book} />
+    </Suspense>
+  );
+};
+
+export const RecipeContent = ({
+  bookPromise,
+}: {
+  bookPromise: Promise<BookWithRecipes | null>;
+}) => {
+  const book = use(bookPromise);
+  if (!book) {
+    notFound();
+  }
   return (
     <div>
       <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
