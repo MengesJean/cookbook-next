@@ -24,7 +24,7 @@ A modern web application for managing your recipes and cookbooks. Built with Nex
 ## Tech Stack
 
 - **Frontend**
-  - Next.js 14 (App Router)
+  - Next.js 15 (App Router)
   - TypeScript
   - Tailwind CSS
   - React Hook Form
