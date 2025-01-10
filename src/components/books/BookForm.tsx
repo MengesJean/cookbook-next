@@ -1,18 +1,25 @@
 "use client";
 
+import { Button } from "@/components/ui/Button";
+import FormField from "@/components/ui/FormField";
+import ImageUpload from "@/components/ui/ImageUpload";
+import Input from "@/components/ui/Input";
 import { createBook, updateBook } from "@/lib/actions/book.actions";
 import { BookSchema, bookSchema } from "@/lib/schemas/book.schemas";
-import { BookWithRecipes } from "@/lib/types/Book";
+import { BookFormType } from "@/lib/types/Book";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { Button } from "../ui/Button";
-import FormField from "../ui/FormField";
-import Input from "../ui/Input";
-
+import { toast } from "sonner";
 interface BookFormProps {
-  book?: BookWithRecipes;
+  book?: BookFormType;
 }
 const BookForm = ({ book }: BookFormProps) => {
+  const router = useRouter();
+  if (book?.image) {
+    book.imagePreview = `${process.env.NEXT_PUBLIC_API_URL}/${book.image}`;
+  }
+  console.log(book);
   const {
     register,
     handleSubmit,
@@ -22,41 +29,54 @@ const BookForm = ({ book }: BookFormProps) => {
     defaultValues: book || {
       id: undefined,
       title: "",
-      image: "",
+      imagePreview: undefined,
     },
   });
 
   const onSubmit = async (data: BookSchema) => {
-    console.log(data);
-    if (book?.id) {
-      await updateBook(data);
-    } else {
-      await createBook(data);
+    try {
+      const response = await (book?.id ? updateBook(data) : createBook(data));
+      console.log(response);
+      if (response.error) {
+        throw new Error("Failed to save book");
+      }
+      router.push(`/dashboard/books/${response.id || book?.id}`);
+      toast.success(`Book ${book?.id ? "updated" : "created"} successfully`);
+    } catch (error) {
+      console.error(error);
+      toast.error(`Failed to ${book?.id ? "update" : "create"} book`);
     }
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {book?.id && (
-        <FormField
-          register={register("id")}
-          render={({ field }) => <Input {...field} type="text" />}
-        />
-      )}
+      {errors && <div>{errors.id?.message}</div>}
       <div className="grid md:grid-cols-2 gap-2">
         <FormField
           register={register("title")}
           label="Title"
           placeholder="Title"
           error={errors.title?.message}
-          render={({ field }) => <Input {...field} className="w-full" />}
+          render={({ field }) => {
+            return <Input {...field} className="w-full" />;
+          }}
         />
         <FormField
-          register={register("image")}
+          register={register("imagePreview")}
           label="Image"
-          placeholder="Image"
-          error={errors.image?.message}
-          render={({ field }) => <Input {...field} className="w-full" />}
+          error={errors.imagePreview?.message}
+          render={({ field }) => {
+            return (
+              <ImageUpload
+                value={book?.imagePreview}
+                name="imagePreview"
+                onChange={(e) => {
+                  field.onChange(e);
+                }}
+                className="w-full"
+              />
+            );
+          }}
         />
       </div>
       <Button type="submit">Submit</Button>

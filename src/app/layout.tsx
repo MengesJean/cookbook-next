@@ -1,6 +1,7 @@
+import Navigation from "@/components/layout/Navigation";
 import type { Metadata } from "next";
 import "./globals.css";
-import Navigation from "@/components/layout/Navigation";
+import Toast from "@/components/ui/Toast";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -17,6 +18,7 @@ export default function RootLayout({
       <body className={`antialiased`}>
         <Navigation />
         {children}
+        <Toast />
       </body>
     </html>
   );

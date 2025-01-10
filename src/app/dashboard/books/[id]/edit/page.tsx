@@ -1,4 +1,5 @@
 import BookForm from "@/components/books/BookForm";
+import DeleteBookButton from "@/components/books/DeleteBookButton";
 import Typography from "@/components/ui/Typography";
 import { getBook } from "@/lib/actions/book.actions";
 
@@ -14,9 +15,10 @@ const EditBookPage = async ({ params }: EditBookPageProps) => {
   return (
     <div>
       <Typography variant="h1" tag="h1" className="mb-4">
-        Edit book {id}
+        Edit book &quot;{book.title}&quot;
       </Typography>
       <BookForm book={book} />
+      <DeleteBookButton book={book} className="mt-4" />
     </div>
   );
 };

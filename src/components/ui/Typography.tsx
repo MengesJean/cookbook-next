@@ -3,7 +3,7 @@ import React, { ElementType } from "react";
 
 type TypographyProps = {
   tag?: (typeof validTextTags)[number];
-  variant: keyof typeof variants;
+  variant?: keyof typeof variants;
   children: React.ReactNode;
   bold?: boolean;
 } & React.HTMLAttributes<HTMLElement>;
@@ -52,7 +52,7 @@ const validTextTags = [
 const Typography = ({
   tag = "p",
   children,
-  variant,
+  variant = "text",
   bold = false,
   ...props
 }: TypographyProps) => {

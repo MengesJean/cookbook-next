@@ -7,7 +7,10 @@ interface FormFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string;
   className?: string;
   label?: string;
-  render?: (props: { field: UseFormRegisterReturn }) => React.ReactNode;
+  value?: string;
+  render?: (props: {
+    field: UseFormRegisterReturn & { value?: string };
+  }) => React.ReactNode;
 }
 
 const FormField = ({
@@ -15,6 +18,7 @@ const FormField = ({
   error,
   className,
   label,
+  value,
   render,
 }: FormFieldProps) => {
   return (
@@ -28,9 +32,9 @@ const FormField = ({
         </label>
       )}
       {render ? (
-        render({ field: register })
+        render({ field: { ...register, value } })
       ) : (
-        <input {...register} className="w-full" />
+        <input {...register} value={value} className="w-full" />
       )}
       {error && <p className="text-sm text-red-500">{error}</p>}
     </div>

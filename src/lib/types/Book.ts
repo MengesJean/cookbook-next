@@ -11,3 +11,7 @@ export type Book = {
 export type BookWithRecipes = Book & {
   recipes: Recipe[];
 };
+
+export type BookFormType = Book & {
+  imagePreview?: string;
+};
